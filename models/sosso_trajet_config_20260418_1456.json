@@ -1,0 +1,64 @@
+{
+  "model_name": "XGBoost",
+  "model_path": "models\\sosso_trajet_XGBoost_20260418_1456.joblib",
+  "saved_at": "20260418_1456",
+  "features": [
+    "distance",
+    "duree_estimee",
+    "heure_debut",
+    "is_rush_hour",
+    "is_nuit",
+    "segment_jour",
+    "dispo_score",
+    "ville_encode",
+    "vitesse_estimee"
+  ],
+  "target": "log_prix_eco",
+  "target_raw": "prix_eco",
+  "dispo_map": {
+    "gris": 1,
+    "rouge": 2,
+    "orange": 3,
+    "jaune": 4,
+    "vert": 5
+  },
+  "ville_map": {
+    "Yaounde": 1,
+    "Douala": 0
+  },
+  "medians": {
+    "distance": 5.154,
+    "duree_estimee": 15.0,
+    "prix_eco": 1150.0,
+    "prix_confort": 1500.0,
+    "prix_confort_plus": 1950.0
+  },
+  "clip_bounds": {
+    "prix_eco": {
+      "p01": 400.0,
+      "p99": 4636.000000000013
+    },
+    "prix_confort": {
+      "p01": 500.0,
+      "p99": 5450.0
+    },
+    "prix_confort_plus": {
+      "p01": 700.0,
+      "p99": 7411.000000000013
+    },
+    "distance": {
+      "p01": 0.0,
+      "p99": 20.933
+    },
+    "duree_estimee": {
+      "p01": 3.0,
+      "p99": 58.0
+    }
+  },
+  "metrics": {
+    "RMSE_XAF": 458.3,
+    "MAE_XAF": 255.79,
+    "R2": 0.661107,
+    "MAPE_pct": 18.9816
+  }
+}

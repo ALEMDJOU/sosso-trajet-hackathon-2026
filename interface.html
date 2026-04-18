@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sosso Trajet — Estimation Yango Yaoundé & Douala</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,300;1,9..144,500&display=swap" rel="stylesheet">
+<style>
+/* --- Reset & Base --- */
+:root {
+  --color-bg: #F4EFE8;
+  --color-panel: #FDFAF6;
+  --color-input: #EDE6DC;
+  --color-primary: #B83228;
+  --color-primary-hover: #D4443A;
+  --color-text-main: #1A1714;
+  --color-text-sub: #5C554F;
+  --color-text-tert: #9E958D;
+  --color-border: #DDD5C8;
+  --color-eco: #2E6B4F;
+  --color-confort: #B83228;
+  --color-confort-plus: #3A4D6B;
+  --font-heading: 'Fraunces', serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text-main);
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: 1.5;
+  overflow-x: hidden;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3%3Cfilter id='noiseFilter'%3%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3%3C/filter%3%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3%3C/svg%3%3E");
+  opacity: 0.035;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* --- Layout --- */
+.site-header {
+  background-color: var(--color-panel);
+  border-bottom: 1px solid var(--color-border);
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand { display: flex; align-items: baseline; gap: 0.5rem; }
+.logo-text { font-family: var(--font-heading); font-weight: 700; font-size: 1.5rem; color: var(--color-primary); }
+.subtitle { font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-sub); font-weight: 300; letter-spacing: 0.05em; }
+.hackathon-badge { font-size: 0.7rem; color: var(--color-text-tert); text-transform: uppercase; padding: 0.25rem 0.5rem; border: 1px solid var(--color-border); border-radius: 4px; font-weight: 300; }
+
+.main-content {
+  max-width: 1600px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+/* --- Form Panel --- */
+.form-panel {
+  width: 420px;
+  flex-shrink: 0;
+  background-color: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 2rem;
+}
+
+.form-title { font-family: var(--font-heading); font-weight: 500; font-style: italic; color: var(--color-primary); font-size: 1.75rem; margin-bottom: 0.5rem; }
+.form-desc { color: var(--color-text-sub); font-weight: 300; margin-bottom: 2rem; font-size: 0.9rem; }
+
+.input-group { margin-bottom: 1.25rem; }
+.label { display: block; font-size: 0.8rem; font-weight: 500; text-transform: uppercase; color: var(--color-text-sub); margin-bottom: 0.5rem; }
+
+.select-wrapper { position: relative; }
+.input-control, .select-control {
+  width: 100%;
+  background-color: var(--color-input);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 0.8rem 1rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--color-text-main);
+  transition: border-color 0.2s ease;
+}
+.input-control::placeholder { color: var(--color-text-tert); font-weight: 300; }
+.input-control:focus, .select-control:focus { outline: none; border-color: var(--color-primary); }
+.input-control.error { border-color: var(--color-primary); background-color: #FFF2F1; }
+
+.select-control { appearance: none; padding-right: 2.5rem; cursor: pointer; color: var(--color-text-main); }
+.select-wrapper::after {
+  content: "";
+  position: absolute;
+  right: 1.2rem; top: 50%; transform: translateY(-50%);
+  width: 0; height: 0;
+  border-left: 5px solid transparent; border-right: 5px solid transparent;
+  border-top: 6px solid var(--color-text-sub);
+  pointer-events: none;
+}
+
+.route-connector { display: flex; flex-direction: column; align-items: center; margin: 0.25rem 0; gap: 4px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; border: 1px solid var(--color-border); }
+.dot.filled { background-color: var(--color-primary); border-color: var(--color-primary); }
+.dot-path { width: 1px; height: 18px; background-color: var(--color-border); }
+
+.grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+
+.btn-submit {
+  width: 100%;
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 1rem;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.btn-submit:hover { background-color: var(--color-primary-hover); }
+
+/* --- Results Panel --- */
+.results-panel { flex-grow: 1; position: relative; }
+
+.state-empty {
+  text-align: center;
+  padding: 6rem 3rem;
+  background-color: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+}
+.empty-msg { font-family: var(--font-heading); font-weight: 300; font-style: italic; color: var(--color-text-tert); font-size: 1.25rem; margin-bottom: 1rem; }
+.empty-source { font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-tert); font-weight: 400; }
+
+.results-content { display: none; flex-direction: column; gap: 1rem; }
+.results-header-container { padding: 0.5rem 0; }
+.results-header { font-family: var(--font-heading); font-weight: 500; font-size: 1.5rem; color: var(--color-text-main); display: flex; align-items: center; gap: 0.75rem; }
+.route-arrow { color: var(--color-primary); }
+.results-meta { font-size: 0.85rem; color: var(--color-text-sub); font-weight: 300; margin-top: 0.25rem; }
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background-color: white;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+}
+.stat-item { padding: 1.25rem; display: flex; flex-direction: column; }
+.stat-item:not(:last-child) { border-right: 1px solid var(--color-border); }
+.stat-value { font-family: var(--font-heading); font-weight: 500; font-size: 2rem; display: flex; align-items: baseline; gap: 0.35rem; }
+.stat-unit { font-family: var(--font-body); font-weight: 300; font-size: 0.9rem; color: var(--color-text-sub); }
+.stat-label { font-size: 0.8rem; font-weight: 500; text-transform: uppercase; color: var(--color-text-sub); }
+
+.availability-badge { display: flex; align-items: center; gap: 0.5rem; font-size: 0.95rem; margin-top: 0.5rem; }
+.status-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+.pricing-list { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
+.price-card {
+  background-color: white;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  display: grid;
+  grid-template-columns: 4px 1fr auto;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  opacity: 0;
+}
+.price-card.slide-in { animation: slideIn 0.35s ease forwards; }
+
+.cat-indicator { grid-row: span 1; height: 100%; width: 4px; border-radius: 4px 0 0 4px; justify-self: stretch; align-self: stretch; }
+.card-content { display: flex; flex-direction: column; }
+.card-price { display: flex; align-items: baseline; gap: 0.35rem; font-size: 1.5rem; font-family: var(--font-heading); font-weight: 500; justify-self: end; padding-right: 1.25rem; }
+.card-currency { font-family: var(--font-body); font-weight: 300; font-size: 0.85rem; color: var(--color-text-sub); }
+.cat-name { font-weight: 500; color: var(--color-text-main); font-size: 1.05rem; }
+.cat-desc { font-size: 0.85rem; color: var(--color-text-tert); font-weight: 300; }
+
+.disclaimer { font-size: 11px; color: var(--color-text-tert); font-weight: 300; padding: 1rem 0; }
+
+/* --- Utility --- */
+.loader-bar {
+  display: none;
+  width: 100%;
+  height: 2px;
+  background-color: #F1D9D6;
+  position: absolute; top: -2.5rem; left: 0;
+  overflow: hidden;
+  border-radius: 2px;
+}
+.loader-progress {
+  width: 30%; height: 100%;
+  background-color: var(--color-primary);
+  animation: loadProgress 0.8s infinite linear;
+}
+
+@keyframes loadProgress { 0% { transform: translateX(-100%); } 100% { transform: translateX(333%); } }
+@keyframes slideIn { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
+
+/* --- Responsive --- */
+@media (max-width: 900px) {
+  .main-content { flex-direction: column; gap: 1rem; padding: 0 1rem; }
+  .form-panel { width: 100%; padding: 1.5rem; margin-bottom: 1rem; }
+  .form-title { font-size: 1.5rem; }
+  .results-panel { width: 100%; }
+}
+
+@media (max-width: 600px) {
+  .site-header { padding: 1rem; }
+  .hackathon-badge { display: none; }
+  .main-content { margin-top: 1rem; }
+  .grid-2col { grid-template-columns: 1fr; gap: 1.25rem; }
+  .stats-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; }
+  .stat-item:nth-child(3) { grid-column: span 2; border-top: 1px solid var(--color-border); border-right: none !important; }
+  .stat-item:nth-child(2) { border-right: none !important; }
+  .stat-item { padding: 1rem; }
+  .stat-value { font-size: 1.75rem; }
+  .results-header { font-size: 1.25rem; }
+  .price-card { grid-template-columns: 4px 1fr; gap: 1rem; }
+  .card-price { grid-column: 2; justify-self: start; padding-right: 0; margin-top: 0.5rem; font-size: 1.35rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">
+    <span class="logo-text">Sosso Trajet</span>
+    <span class="subtitle">Yaoundé & Douala</span>
+  </div>
+  <div class="hackathon-badge">Hackathon DATA 4 CHANGE · 2025</div>
+</header>
+
+<main class="main-content">
+  <aside class="form-panel">
+    <h1 class="form-title">Estimez votre suivi de trajet</h1>
+    <p class="form-desc">Basé sur une analyse exclusive de données locales.</p>
+
+    <div class="input-group">
+      <label class="label" for="city-code">Ville de référence</label>
+      <div class="select-wrapper">
+        <select id="city-code" class="select-control">
+          <option value="yde">Yaoundé</option>
+          <option value="dla">Douala</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label class="label" for="pickup">Point de départ</label>
+      <input type="text" id="pickup" class="input-control" placeholder="Ex: Bastos, Boulangerie Acropole">
+    </div>
+
+    <div class="route-connector">
+      <span class="dot filled"></span>
+      <span class="dot-path"></span>
+      <span class="dot"></span>
+    </div>
+
+    <div class="input-group">
+      <label class="label" for="dropoff">Point d'arrivée</label>
+      <input type="text" id="dropoff" class="input-control" placeholder="Ex: Marché Central, Douala Grand Mall">
+    </div>
+
+    <div class="grid-2col">
+      <div class="input-group">
+        <label class="label" for="time-window">Créneau horaire</label>
+        <div class="select-wrapper">
+          <select id="time-window" class="select-control">
+            <option value="matin_t">Matin très tôt (05-07h)</option>
+            <option value="matin_p" selected>Matin Pointe (07-09h)</option>
+            <option value="journee">Journée (09-16h)</option>
+            <option value="soir_p">Soir Pointe (16-19h)</option>
+            <option value="soir_t">Soir tard (19-23h)</option>
+          </select>
+        </div>
+      </div>
+      <div class="input-group">
+        <label class="label" for="dispo-base">Dispo. véhicules</label>
+        <div class="select-wrapper">
+          <select id="dispo-base" class="select-control">
+            <option value="moderee" selected>Normalement disponible</option>
+            <option value="faible">Disponibilité limitée</option>
+            <option value="elevee">Très disponible</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <button type="button" id="submit-btn" class="btn-submit">Calculer l'estimation</button>
+  </aside>
+
+  <section class="results-panel">
+    <div id="loader" class="loader-bar"><div class="loader-progress"></div></div>
+
+    <div id="state-empty" class="state-empty">
+      <p class="empty-msg">Votre estimation apparaîtra ici une fois le trajet saisi.</p>
+      <p class="empty-source">Données issues de 7 341 courses Yango</p>
+    </div>
+
+    <div id="state-results" class="results-content">
+      <div class="results-header-container">
+        <h2 class="results-header">
+          <span id="res-pickup">Bastos</span> <span class="route-arrow">→</span> <span id="res-dropoff">Marché Central</span>
+        </h2>
+        <p class="results-meta"><span id="res-city">Yaoundé</span> · Simulation de modèle prédictif</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-item">
+          <span class="stat-label">Distance est.</span>
+          <div class="stat-value"><span id="val-dist">--</span> <span class="stat-unit">km</span></div>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Durée course est.</span>
+          <div class="stat-value"><span id="val-duree">--</span> <span class="stat-unit">min</span></div>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Trafic & Dispo.</span>
+          <div id="val-dispo" class="availability-badge">--</div>
+        </div>
+      </div>
+
+      <div class="pricing-list">
+        <div class="price-card eco" style="animation-delay: 60ms">
+          <div class="cat-indicator" style="background-color: var(--color-eco)"></div>
+          <div class="card-content">
+            <span class="cat-name">Éco</span>
+            <span class="cat-desc">Standard, sans climatisation</span>
+          </div>
+          <div class="card-price"><span id="price-eco">-,---</span> <span class="card-currency">FCFA</span></div>
+        </div>
+        <div class="price-card confort" style="animation-delay: 120ms">
+          <div class="cat-indicator" style="background-color: var(--color-confort)"></div>
+          <div class="card-content">
+            <span class="cat-name">Confort</span>
+            <span class="cat-desc">Climatisation, meilleur véhicule</span>
+          </div>
+          <div class="card-price"><span id="price-conf">-,---</span> <span class="card-currency">FCFA</span></div>
+        </div>
+        <div class="price-card confort-plus" style="animation-delay: 180ms">
+          <div class="cat-indicator" style="background-color: var(--color-confort-plus)"></div>
+          <div class="card-content">
+            <span class="cat-name">Confort+</span>
+            <span class="cat-desc">Véhicule premium, chauffeur haut gradé</span>
+          </div>
+          <div class="card-price"><span id="price-conf-plus">-,---</span> <span class="card-currency">FCFA</span></div>
+        </div>
+      </div>
+
+      <p class="disclaimer">Estimation générée à <span id="calc-time">--:--</span>. Ces prix sont fournis à titre indicatif et ne garantissent pas la disponibilité ou le tarif final appliqué par l'opérateur.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+/* --- Configuration & Données --- */
+const DUREE_BASE_PAR_KM = 3; // minutes par km hors trafic
+const TARIFS_YDE = { // Prix d'entrée de gamme simuler, par km, Confort, Confort+
+  base: { eco: 1500, confort: 1900, confPlus: 2600 },
+  parKm: { eco: 180, confort: 220, confPlus: 300 }
+};
+
+/* --- Fonctions Utilitaires --- */
+const formatPrice = (val) => val.toLocaleString('fr-FR');
+const formatTime = () => new Date().toLocaleTimeString('fr-FR', { hour: '2d', minute: '2d' });
+
+/* --- LOGIQUE D'INTÉGRATION MODÈLE --- */
+/**
+ * Appel le modèle de prédiction des tarifs (Point d'intégration futur).
+ * @param {Object} payload { duree_estimee, distance, heure, dispo_score, ville_code }
+ * @returns {Promise<Object>} Résultat simulé après validation
+ */
+async function appelModele(payload) {
+  // Simuler le délai de calcul (900ms)
+  await new Promise(resolve => setTimeout(resolve, 900));
+
+  // Calcul basique et simulé pour les besoins de l'interface
+  const cityRates = TARIFS_YDE; // Utiliser rates Yde par défaut pour la démo
+  const factDuree = 1.05; // Facteur d'ajustement temps
+  const factTrafic = 1.25; // Facteur arbitraire Pointe/Dispo
+
+  const distVal = payload.distance;
+  const durVal = payload.duree_estimee;
+
+  // Calcul tarifs de simulation (modèle simple base + distance + temps + facteur trafic)
+  const calc = (cat) => cityRates.base[cat] + (cityRates.parKm[cat] * distVal) + (durVal * 15);
+
+  return {
+    val: { distance: distVal, duree: durVal, dispo_label: 'Modérée', dispo_status: 'warning' },
+    prices: {
+      eco: Math.round(calc('eco') * 1.0),
+      confort: Math.round(calc('confort') * factTrafic),
+      confPlus: Math.round(calc('confPlus') * factTrafic),
+    }
+  };
+}
+
+/* --- Logique Interface --- */
+const submitBtn = document.getElementById('submit-btn');
+const inputPickup = document.getElementById('pickup');
+const inputDropoff = document.getElementById('dropoff');
+const stateEmpty = document.getElementById('state-empty');
+const stateResults = document.getElementById('state-results');
+const loader = document.getElementById('loader');
+
+async function triggerEstimation() {
+  const pickupVal = inputPickup.value.trim();
+  const dropoffVal = inputDropoff.value.trim();
+  const cityVal = document.getElementById('city-code').value;
+
+  // 1. Validation Minimale
+  let hasError = false;
+  inputPickup.classList.remove('error');
+  inputDropoff.classList.remove('error');
+
+  if (!pickupVal) { inputPickup.classList.add('error'); hasError = true; }
+  if (!dropoffVal) { inputDropoff.classList.add('error'); hasError = true; }
+  if (hasError) return;
+
+  // 2. Préparation États
+  stateEmpty.style.display = 'none';
+  stateResults.style.display = 'none';
+  loader.style.display = 'block';
+  submitBtn.disabled = true;
+  submitBtn.innerText = "Calcul de l'estimation...";
+
+  // 3. Payload pour modèle (Valeurs fixes simulées ici avant géocodage réel)
+  const distSimul = (Math.random() * (12.5 - 2.1) + 2.1); // Simulation entre 2.1 et 12.5 km
+  const durSimul = Math.round(distSimul * DUREE_BASE_PAR_KM * (1 + (Math.random() * 0.4)));
+
+  const payload = {
+    pickup_str: pickupVal,
+    dropoff_str: dropoffVal,
+    ville_code: cityVal,
+    heure: document.getElementById('time-window').value,
+    dispo_score: document.getElementById('dispo-base').value,
+    distance: distSimul, // km réel à venir après géocodage
+    duree_estimee: durSimul // min réelle à venir après routing
+  };
+
+  try {
+    // 4. Appel Modèle (Async Simulation)
+    const result = await appelModele(payload);
+
+    // 5. Mise à jour UI
+    // Header Trajet
+    document.getElementById('res-pickup').innerText = payload.pickup_str;
+    document.getElementById('res-dropoff').innerText = payload.dropoff_str;
+    document.getElementById('res-city').innerText = cityVal === 'yde' ? 'Yaoundé' : 'Douala';
+
+    // Stats Grid
+    document.getElementById('val-dist').innerText = result.val.distance.toFixed(1).replace('.', ',');
+    document.getElementById('val-duree').innerText = result.val.duree;
+    const badgeDispo = document.getElementById('val-dispo');
+    badgeDispo.innerHTML = `<span class="status-dot" style="background-color: #F8B043"></span> Normal`; // Simulation warning
+
+    // Tarifs
+    document.getElementById('price-eco').innerText = formatPrice(result.prices.eco);
+    document.getElementById('price-conf').innerText = formatPrice(result.prices.confort);
+    document.getElementById('price-conf-plus').innerText = formatPrice(result.prices.confPlus);
+
+    // Disclaimer Time
+    document.getElementById('calc-time').innerText = formatTime();
+
+    // 6. Affichage final
+    loader.style.display = 'none';
+    stateResults.style.display = 'flex';
+    submitBtn.disabled = false;
+    submitBtn.innerText = "Calculer l'estimation";
+
+    // Déclencher animation d'entrée
+    const cards = document.querySelectorAll('.price-card');
+    cards.forEach(card => card.classList.add('slide-in'));
+    setTimeout(() => cards.forEach(card => card.classList.remove('slide-in')), 600); // Nettoyage après anim
+
+  } catch (error) {
+    console.error('Erreur lors du calcul:', error);
+    loader.style.display = 'none';
+    stateEmpty.style.display = 'block';
+    stateEmpty.innerHTML = '<p class="empty-msg" style="color:var(--color-primary)">Erreur de communication. Veuillez réessayer.</p>';
+    submitBtn.disabled = false;
+    submitBtn.innerText = "Calculer l'estimation";
+  }
+}
+
+// Events
+submitBtn.addEventListener('click', triggerEstimation);
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') triggerEstimation();
+});
+
+</script>
+</body>
+</html>
